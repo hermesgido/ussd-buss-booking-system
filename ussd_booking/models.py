@@ -51,4 +51,10 @@ class Complaint(models.Model):
     phone_number =  models.CharField(max_length=20)
     message = models.CharField(max_length=200, null=True, blank=True)
     date = models.DateTimeField(auto_now=True, null=True)
-    
+
+class Passenger(models.Model):
+    phone_number  = models.CharField(max_length=30, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    created_date = models.DateTimeField(auto_now=True, null=True, blank=True)
+    choice = (("Male", "Male"), ("Female", "Female"))
+    gender = models.CharField(max_length=100, choices=choice, null=True, blank=True)

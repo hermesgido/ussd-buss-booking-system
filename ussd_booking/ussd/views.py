@@ -1,6 +1,6 @@
 import random
 from datetime import datetime, timedelta
-from ..models import Booking, Bus, Complaint, Seat, Trip
+from ..models import Booking, Bus, Complaint, Passenger, Seat, Trip
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
@@ -72,6 +72,8 @@ def ussd_callback(request):
             ticket_number = random.randint(1000, 9999)
             book = Booking.objects.create(trip = trip, user_phone = phone_number, ticket_number=ticket_number, date = datetime.today(), user_name = "Juma abdala")
             book.save()
+            passenger = Passenger.objects.get_or_create(phone_number=phone_number)
+            passenger.save()
             print(f"Request routed id is {trip_id}")
 
             response = "CON Your booking details are \n \n"

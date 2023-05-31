@@ -7,3 +7,4 @@ admin.site.register(Route)
 
 admin.site.register(Trip)
 admin.site.register(Seat)
+admin.site.register(Passenger)
