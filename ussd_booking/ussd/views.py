@@ -86,18 +86,18 @@ def ussd_callback(request):
             
             
         elif  text.endswith("OK"):
-            print(f"Request routed id is {text}")
-            if request.session.has_key('trip_id'):
-               print(f"Request routed id is exists")
-               trip_id = request.session['trip_id']
-               if trip_id is None:
-                   response = "END Trip information not found. Please start again."
-               else:
-                    ticket_number = random.randint(1000, 9999)
-                    trip = Trip.objects.get(id=trip_id)
-                    book = Booking.objects.create(trip = trip, user_phone = phone_number, date = datetime.today(), ticket_number = ticket_number, user_name = "Juma abdala")
-                    book.save()
-                    response = f"END Your Bokking has been successfully, You will receive a BOOKING NUMBER via SMS soon"
+            # print(f"Request routed id is {text}")
+            # if request.session.has_key('trip_id'):
+            #    print(f"Request routed id is exists")
+            #    trip_id = request.session['trip_id']
+            #    if trip_id is None:
+            #        response = "END Trip information not found. Please start again."
+            #    else:
+            #         ticket_number = random.randint(1000, 9999)
+            #         trip = Trip.objects.get(id=trip_id)
+            #         book = Booking.objects.create(trip = trip, user_phone = phone_number, date = datetime.today(), ticket_number = ticket_number, user_name = "Juma abdala")
+            #         book.save()
+                response = f"END Your Bokking has been successfully, You will receive a BOOKING NUMBER via SMS soon"
                 
                             
             
