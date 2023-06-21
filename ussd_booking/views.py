@@ -1,16 +1,30 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from ussd_booking.form import *
 from . models import *
 
+def login_view(request):
+    if request.method =="POST":        
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        print(f"username is {username}")
+        
+        user = authenticate(username=username, password=password)
 
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Welcom..!")
+            return redirect(home)
+        else:
+             messages.error(request, "Login not succesfull..!")
+    return render(request, 'login.html')
+
+@login_required
 def home(request):
     return render(request, 'index.html')
-
-def login_view(request):
-    return render(request, 'login.html')
 
 def logout_view(request):
     logout(request)
@@ -97,29 +111,29 @@ def bookings(request):
     return render(request, 'bookings.html', context)
 
 
-def trips(request):
-    trips_list =enumerate(Trip.objects.all(), start=1)
-    print(trips_list)
-    form = TripForm()
+def schedule(request):
+    schedule_list =enumerate(Schedule.objects.all(), start=1)
+    print(schedule_list)
+    form = ScheduleForm()
     if request.method == "POST":
-        form = TripForm(request.POST)
+        form = ScheduleForm(request.POST)
         if form.is_valid():
            buss = form.cleaned_data['bus']
            route = form.cleaned_data['route']
            date = form.cleaned_data['date']
            
-           if Trip.objects.filter(bus=buss, date=date):
-               messages.error(request, "Trip with this date and buss alredy exist")
-               return redirect(trips)
-           if Trip.objects.filter(route=route, date=date).exists():
-               messages.error(request, "Trip with this route and date alredy exist")
-               return redirect(trips)
+           if Schedule.objects.filter(bus=buss):
+               messages.error(request, "Schedule with this buss alredy exist")
+               return redirect(schedule)
+        #    if Schedule.objects.filter(route=route, date=date).exists():
+        #        messages.error(request, "Schedule with this route and date alredy exist")
+               return redirect(schedule)
            form.save()
-           messages.success(request, "Trip successfully added")
-           return redirect(trips)
+           messages.success(request, "Schedule successfully added")
+           return redirect(schedule)
     
-    context =  {'form': form, 'trips_list': trips_list}
-    return render(request, 'trips.html', context)
+    context =  {'form': form, 'schedule_list': schedule_list}
+    return render(request, 'schedule.html', context)
 
 
 

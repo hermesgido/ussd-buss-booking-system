@@ -22,14 +22,15 @@
                     </li>
                    
                     <li class="nav-item ">
-                        <a class="nav-link" href="{% url 'trips' %}"  aria-expanded="false" data-target="#submenu-4" aria-controls="submenu-4"><i class="fab fa-fw fa-wpforms"></i>Trips</a>
+                        <a class="nav-link" href="{% url 'schedule' %}"  aria-expanded="false" data-target="#submenu-4" aria-controls="submenu-4"><i class="fab fa-fw fa-wpforms"></i>Schedules</a>
                         
                     </li>
+                    {% if request.user.is_superuser %}
+
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'routes' %}"  aria-expanded="false" data-target="#submenu-5" aria-controls="submenu-5"><i class="fas fa-fw fa-table"></i>Routes</a>
                        
                     </li>
-                    {% if request.user.is_superuser %}
 
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'busses' %}"  aria-expanded="false" data-target="#submenu-5" aria-controls="submenu-5"><i class="fas fa-fw fa-table"></i>Busses</a>

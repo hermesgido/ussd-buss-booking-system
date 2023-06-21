@@ -1,8 +1,27 @@
+from __future__ import print_function
 import random
 from datetime import datetime, timedelta
-from ..models import Booking, Bus, Complaint, Passenger, Seat, Trip
+from ..models import Booking, Bus, Complaint, Passenger, Seat, Schedule
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+import africastalking
+
+def send_sms_api(phone_number, message):
+		# Set your app credentials
+        username = "sandbox"
+        api_key = "12ed242238c8da48b98d5be53e473cd83c5cec1d6f3778f3a1fe3a1e30afbb43"
+        africastalking.initialize(username, api_key)
+        sms = africastalking.SMS
+        recipients = phone_number
+        message = message;
+        sender = "NEW FORCE"
+        try:
+            # Thats it, hit send and we'll take care of the rest.
+            response = africastalking.SMS.send(message, recipients, sender)
+            print (response)
+        except Exception as e:
+            print ('Encountered an error while sending: %s' % str(e))
+
 
 # Create your views here.
 @csrf_exempt
@@ -35,17 +54,17 @@ def ussd_callback(request):
 
         elif text == "2":
             response = "CON Choose an option \n"
-            response += "1. Tomorrow - 23/05 \n"
-            response += "2. After Tomorrow - 23/05 \n"
+            response += f"1. Tomorrow - {(datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')} \n"
+            response += f"2. After Tomorrow - {(datetime.today() + timedelta(days=2)).strftime('%Y-%m-%d')} \n"
 
          #Follow up
         elif text == '2*1':
             data = f"CON Availble Roots are:[select one ] \n"
-            today = datetime.today().strftime('%Y-%m-%d')
-            if Trip.objects.filter(date=today).count()>0:
-                trips=enumerate(Trip.objects.filter(date=today), start=1)
-                for no, trip in trips:
-                    data += f"{trip.id}. {trip} \n"
+            today = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+            if Schedule.objects.filter(date=today).count()>0:
+                schedule=enumerate(Schedule.objects.filter(date=today), start=1)
+                for no, schedule in schedule:
+                    data += f"{schedule.id}. {schedule} \n"
                 response = data
             else:
                 response = f"END No trip found for date: {today} \n"
@@ -53,51 +72,42 @@ def ussd_callback(request):
 
         elif text == '2*2':
             print(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")      
-            tomorrow = datetime.today() + timedelta(days=1)
+            tomorrow = datetime.today() + timedelta(days=2)
             tomorrow_date = tomorrow.strftime('%Y-%m-%d')
             data = f"CON Availble Roots are:[select one ] \n"
-            if Trip.objects.filter(date=tomorrow_date).count() > 0:
-                trips=enumerate(Trip.objects.filter(date=tomorrow_date), start=1)
-                for no, trip in trips:
-                    data += f"{trip.id}. {trip} \n"
+            if Schedule.objects.filter(date=tomorrow_date).count() > 0:
+                schedule=enumerate(Schedule.objects.filter(date=tomorrow_date), start=1)
+                for no, schedule in schedule:
+                    data += f"{schedule.id}. {schedule} \n"
                 response = data
             else:
                 response = f"END No trip found for {tomorrow_date}"
  
         
         elif  not text.endswith("OK") and not text.startswith("3") and not text.startswith("4") and not text.startswith("5"):
-            trip_id = text.split('*')[-1]
-            trip = Trip.objects.get(id=trip_id)
-            trip = Trip.objects.get(id=trip_id)
+            schedule_id = text.split('*')[-1]
+            schedule = Schedule.objects.get(id=schedule_id)
+            schedule= Schedule.objects.get(id=schedule_id)
             ticket_number = random.randint(1000, 9999)
-            book = Booking.objects.create(trip = trip, user_phone = phone_number, ticket_number=ticket_number, date = datetime.today(), user_name = "Juma abdala")
+            book = Booking.objects.create(schedule = schedule, user_phone = phone_number, ticket_number=ticket_number, date = datetime.today(), user_name = "Joseph Michael")
             book.save()
-            passenger = Passenger.objects.get_or_create(phone_number=phone_number)
+            passenger, create = Passenger.objects.get_or_create(phone_number=phone_number)
             passenger.save()
-            print(f"Request routed id is {trip_id}")
+            message = f"Your Booking is successful, Ticket number is {ticket_number}"
+            send_sms_api(phone_number = [str(phone_number)], message = message)
+            print(f"Request routed id is {schedule_id}")
 
             response = "CON Your booking details are \n \n"
-            response += f"ROUTE: {trip.route.name}\n"
+            response += f"ROUTE: {schedule.route.name}\n"
             response += f"DEPARTURE PLACE: Mbezi Stand \n"
-            response += f"DATE: {trip.date}\n"
-            response += f"BUS NUMBER: {trip.bus.number_plate}\n"
-            response += f"PRICE: {trip.route.price}\n \n"         
+            response += f"DATE: {schedule.date}\n"
+            response += f"BUS NUMBER: {schedule.bus.number_plate}\n"
+            response += f"PRICE: {schedule.route.price}\n \n"         
             response += f"Enter OK to confirm your booking \n"
             
             
         elif  text.endswith("OK"):
-            print(f"Request routed id is {text}")
-            if request.session.has_key('trip_id'):
-               print(f"Request routed id is exists")
-               trip_id = request.session['trip_id']
-               if trip_id is None:
-                   response = "END Trip information not found. Please start again."
-               else:
-                    ticket_number = random.randint(1000, 9999)
-                    trip = Trip.objects.get(id=trip_id)
-                    book = Booking.objects.create(trip = trip, user_phone = phone_number, date = datetime.today(), ticket_number = ticket_number, user_name = "Juma abdala")
-                    book.save()
-                    response = f"END Your Bokking has been successfully, You will receive a BOOKING NUMBER via SMS soon"
+            response = f"END Your Booking has been successfully, You will receive a TICKET NUMBER via SMS soon"
                 
                             
             
@@ -117,11 +127,11 @@ def ussd_callback(request):
             if Booking.objects.filter(ticket_number=ticket_number).exists():
                 booking  = Booking.objects.filter(ticket_number=ticket_number).first()
                 response += f"END Your ticket Details are \n \n"
-                response += f"ROUTE: {booking.trip.route.name}\n"
+                response += f"ROUTE: {booking.schedule.route.name}\n"
                 response += f"DEPARTURE PLACE: Mbezi Stand \n"
-                response += f"DATE: {booking.trip.date}\n"
-                response += f"BUS NUMBER: {booking.trip.bus.number_plate}\n"
-                response += f"PRICE: {booking.trip.route.price}\n \n"
+                response += f"DATE: {booking.schedule.date}\n"
+                response += f"BUS NUMBER: {booking.schedule.bus.number_plate}\n"
+                response += f"PRICE: {booking.schedule.route.price}\n \n"
                 print(f"Enter booking it exists")           
             else:
                 response = f" END No booking found with ticket number {ticket_number}."

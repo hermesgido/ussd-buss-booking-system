@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8nctvt&xy=6duo02gt(&y0)qr(t^7kd4^)5otw8h*r70k+wk*-'
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'b940-197-250-96-134.ngrok-free.app']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -108,3 +108,5 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/'

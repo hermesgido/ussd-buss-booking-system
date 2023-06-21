@@ -65,11 +65,11 @@ class BookingForm(MainForm):
         exclude =['id']
         
 
-class TripForm(MainForm):
+class ScheduleForm(MainForm):
 
     class Meta:
 
-        model = Trip
+        model = Schedule
         exclude =['id']
         
 class ComplaintForm(MainForm):

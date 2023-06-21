@@ -20,10 +20,11 @@ class Bus(models.Model):
 
     def __str__(self):
         return self.number_plate
-class Trip(models.Model):
+class Schedule(models.Model):
     route = models.ForeignKey(Route, null=True, blank=True, on_delete=models.CASCADE)
     bus = models.ForeignKey(Bus, null=True, blank=True, on_delete=models.CASCADE)
     date = models.DateField()
+    departure_time = models.TimeField(null=True)
     
     def __str__(self):
         return self.route.name + " " + str(self.date)
@@ -37,7 +38,7 @@ class Seat(models.Model):
         return self.number
 
 class Booking(models.Model):
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, null=True, blank=True)
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, null=True, blank=True)
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateTimeField(auto_now=True, null=True)
     user_phone = models.CharField(max_length=120, null=True, blank=True)
@@ -45,7 +46,7 @@ class Booking(models.Model):
     ticket_number = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.trip} - {self.seat}"
+        return f"{self.schedule} - {self.seat}"
 
 class Complaint(models.Model):
     phone_number =  models.CharField(max_length=20)
