@@ -67,11 +67,11 @@ def ussd_callback2(request):
 
         elif text == "1":
             results = enumerate(Bus.objects.all(), start=1)
-            response = "CON The List of Our Busses is \n"
-            response += "98. Go Back \n 99. Main Menu"
+            response = "CON The List of Our Busses: \n"
 
             for no, i in results:
-                response += f"{no}. {i}\n"
+                response += f"- {i}\n"
+            response += "98. Go Back \n 99. Main Menu"
 
         elif text == "2":
             response = "CON Choose an route \n"
@@ -268,7 +268,6 @@ def ussd_callback(request):
             for no, i in results:
                 response += f"{no}. {i}\n"
             response += "98. Go Back \n 99. Main Menu"
-            
 
         elif text == "2":
             response = "CON Choose an option \n"
@@ -290,7 +289,6 @@ def ussd_callback(request):
                 response = f"CON No trip found for date: {today} \n"
                 response += "98. Go Back \n 99. Main Menu"
 
-
         elif text == '2*2':
             print(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
             tomorrow = datetime.today() + timedelta(days=2)
@@ -307,7 +305,6 @@ def ussd_callback(request):
             else:
                 response = f"END No trip found for {tomorrow_date}\n"
                 response += "98. Go Back \n 99. Main Menu"
-
 
         elif not text.endswith("OK") and not text.startswith("3") and not text.startswith("4") and not text.startswith("5"):
             schedule_id = text.split('*')[-1]
