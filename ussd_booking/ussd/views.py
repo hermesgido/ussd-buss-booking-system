@@ -70,7 +70,7 @@ def ussd_callback2(request):
             response = "CON The List of Our Busses: \n"
 
             for no, i in results:
-                response += f"- {i}\n"
+                response += f"=> {i}\n"
             response += "98. Go Back \n 99. Main Menu"
 
         elif text == "2":
