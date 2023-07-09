@@ -1,9 +1,12 @@
 from django.urls import path
-from  .ussd.views import ussd_callback
+from  .ussd.views import ussd_callback, ussd_callback2
 from . import views
 
 urlpatterns = [
     path('ussd_callback/', ussd_callback, name='ussd_callback'),
+    path('ussd_callback2/', ussd_callback2, name='ussd_callback2'),
+
+
     path('', views.login_view, name="login"),
     path('index/', views.home, name="home"),
     path('logout/', views.logout_view, name="logout"),
