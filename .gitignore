@@ -22,7 +22,8 @@ media
 
 # C extensions
 *.so
-
+mnos.py
+nn.py
 # Distribution / packaging
 .Python
 build/
