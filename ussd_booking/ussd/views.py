@@ -6,12 +6,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import africastalking
 from django.core.cache import cache
-
+import os
+import dotenv
+dotenv.load_dotenv()
 
 def send_sms_api(phone_number, message):
 		# Set your app credentials
-        username = "sandbox"
-        api_key = "12ed242238c8da48b98d5be53e473cd83c5cec1d6f3778f3a1fe3a1e30afbb43"
+        username = os.getenv('SANDBOX_USER')
+        api_key = os.getenv('DEV_API_KEY')
         africastalking.initialize(username, api_key)
         sms = africastalking.SMS
         recipients = phone_number
