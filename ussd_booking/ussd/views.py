@@ -99,7 +99,6 @@ def ussd_callback2(request):
                 seats_per_row = 4  # Number of seats per row
                 total_seats = 30  # Total number of seats
                 response = "CON Please select a seat number:\n"
-                response += "98. Go Back \n 99. Main Menu"
 
                 for i in range(total_seats):
                     # Pad seat number with leading zeros
@@ -110,6 +109,7 @@ def ussd_callback2(request):
                     if i % seats_per_row == 0 and i > 0:
                         response += "\n"  # Add a new line after each row
                     response += seat_number + " "
+                response += "\n 98. Go Back \n 99. Main Menu"
             else:
                 response = "CON No Trip Found\n"
                 response += "98. Go Back \n 99. Main Menu"
@@ -182,6 +182,8 @@ def ussd_callback2(request):
                     if i % seats_per_row == 0 and i > 0:
                         response += "\n"  # Add a new line after each row
                     response += seat_number + " "
+                response += "98. Go Back \n 99. Main Menu"
+
             else:
                 response = "CON No Trip Found\n"
                 response += "98. Go Back \n 99. Main Menu"
