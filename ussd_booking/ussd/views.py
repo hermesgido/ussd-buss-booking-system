@@ -10,6 +10,40 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
+class BusSeats:
+    def __init__(self, seats):
+        self.seats = seats
+
+    def filter_available_seats(self, sold_seats):
+        num_columns = 4
+        available_seats = self.seats[:]  # Create a copy of seats to avoid modifying the original list
+
+        # Update specific index elements with "xx"
+        for seat in sold_seats:
+            if seat < len(available_seats):
+                available_seats[seat] = "xx"
+
+        # Format seats with four columns and add spacing between the second and third columns
+        formatted_rows = []
+        for i in range(0, len(available_seats), num_columns):
+            row = available_seats[i:i+num_columns]
+            if i == 0:  # Only for the first row
+                formatted_row = '______' +' '+ ' '*3 + row[0] + ' ' + row[1]
+            else:
+                formatted_row = row[0] + ' ' + row[1] + '    ' + row[2] + ' ' + row[3] if len(row) == 4 else ' '.join(row)
+            formatted_rows.append(formatted_row)
+
+        formatted_string = '\n'.join(formatted_rows)
+        return formatted_string
+
+
+# # Example usage
+# bus_seats = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32']
+# bus = BusSeats(bus_seats)
+# sold_seats = [2, 4, 7]
+# result = bus.filter_available_seats(sold_seats)
+# print(result)
+
 
 def send_sms_api(phone_number, message):
     # Set your app credentials
@@ -87,7 +121,7 @@ def ussd_callback2(request):
             response += f"2. After Tomorrow - {(datetime.today() + timedelta(days=2)).strftime('%Y-%m-%d')} \n"
             response += "98. Go Back \n 99. Main Menu"
 
-        elif text == "2*1*1" or text == "2*2*1" or text == "2*3*1" or text == "2*4*1" and not text.endswith("99"):
+        elif text == "2*1*1" or text == "2*2*1" or text == "2*3*1" or text == "2*4*1":
             cache.set("trip_date", 1)
             route_name_cached = cache.get('route_name')
             if Schedule.objects.filter(route__name=route_name_cached, date=datetime.today() + timedelta(days=1)).exists():
@@ -96,25 +130,33 @@ def ussd_callback2(request):
                 bookings = Booking.objects.filter(schedule=schedule)
                 booked_seats = [int(booking.seat_number)
                                 for booking in bookings]
-                seats_per_row = 4  # Number of seats per row
-                total_seats = 30  # Total number of seats
-                response = "CON Please select a seat number:\n"
+                # seats_per_row = 4  # Number of seats per row
+                # total_seats = 30  # Total number of seats
+                # response = "CON Please select a seat number:\n"
 
-                for i in range(total_seats):
-                    # Pad seat number with leading zeros
-                    seat_number = str(i + 1).zfill(2)
-                    # Check if the seat is booked
-                    if i + 1 in booked_seats:
-                        seat_number = "XX"
-                    if i % seats_per_row == 0 and i > 0:
-                        response += "\n"  # Add a new line after each row
-                    response += seat_number + " "
+                # for i in range(total_seats):
+                #     # Pad seat number with leading zeros
+                #     seat_number = str(i + 1).zfill(2)
+                #     # Check if the seat is booked
+                #     if i + 1 in booked_seats:
+                #         seat_number = "XX"
+                #     if i % seats_per_row == 0 and i > 0:
+                #         response += "\n"  # Add a new line after each row
+                #     response += seat_number + " "
+                    
+                bus_seats = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32']
+                bus = BusSeats(bus_seats)
+                sold_seats = [(booking.seat_number) for booking in bookings]
+                result = bus.filter_available_seats(sold_seats)
+                
+                response = "CON Please select a seat number:\n"
+                response += str(result)
                 response += "\n 98. Go Back \n 99. Main Menu"
             else:
                 response = "CON No Trip Found\n"
                 response += "98. Go Back \n 99. Main Menu"
 
-        elif text.startswith("2*1*1*") or text.startswith("2*1*2*") and not text.endswith("99"):
+        elif text.startswith("2*1*1*") or text.startswith("2*1*2*") or text.startswith("2*1*3*") or text.startswith("2*1*4*") or text.startswith("2*2*1*") or text.startswith("2*2*2*") or text.startswith("2*2*3*") or text.startswith("2*2*4*"):
             seat_number = text.split("*")[-1]
             print(seat_number)
             cache.set("seat_number", seat_number)
@@ -158,7 +200,7 @@ def ussd_callback2(request):
                 response += f"BUS NUMBER: {schedule.bus.number_plate}\n"
                 response += f"PRICE: {schedule.route.price}\n \n"
                 response += f"Ticket number is {ticket_number}\n"
-                response += "98. Go Back \n 99. Main Menu"
+                response += "98. Go Back \n 99. Main Menu \n"
                 response += f"Check Your SMS inbox for more details \n"
 
         elif text == "2*1*2" or text == "2*2*2" or text == "2*3*2" or text == "2*4*2" and not text.endswith("99"):
@@ -168,20 +210,25 @@ def ussd_callback2(request):
                 schedule = Schedule.objects.get(
                     route__name=route_name_cached, date=datetime.today() + timedelta(days=2))
                 bookings = Booking.objects.filter(schedule=schedule)
-                booked_seats = [int(booking.seat_number)
-                                for booking in bookings]
-                seats_per_row = 4  # Number of seats per row
-                total_seats = 30  # Total number of seats
-                response = "CON Please select a seat number:\n"
-                for i in range(total_seats):
-                    # Pad seat number with leading zeros
-                    seat_number = str(i + 1).zfill(2)
-                    # Check if the seat is booked
-                    if i + 1 in booked_seats:
-                        seat_number = "XX"
-                    if i % seats_per_row == 0 and i > 0:
-                        response += "\n"  # Add a new line after each row
-                    response += seat_number + " "
+                booked_seats = [int(booking.seat_number) for booking in bookings]
+                # seats_per_row = 4  # Number of seats per row
+                # total_seats = 30  # Total number of seats
+                # response = "CON Please select a seat number:\n"
+                # for i in range(total_seats):
+                #     # Pad seat number with leading zeros
+                #     seat_number = str(i + 1).zfill(2)
+                #     # Check if the seat is booked
+                #     if i + 1 in booked_seats:
+                #         seat_number = "XX"
+                #     if i % seats_per_row == 0 and i > 0:
+                #         response += "\n"  # Add a new line after each row
+                #     response += seat_number + " "
+                
+                bus_seats = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32']
+                bus = BusSeats(bus_seats)
+                sold_seats = [str(booking.seat_number) for booking in bookings]
+                result = bus.filter_available_seats(sold_seats)
+                
                 response += "98. Go Back \n 99. Main Menu"
 
             else:
@@ -197,8 +244,7 @@ def ussd_callback2(request):
             ticket_number = text.split('*')[-1]
             print(f"Enter ticket number{ticket_number}")
             if Booking.objects.filter(ticket_number=ticket_number).exists():
-                booking = Booking.objects.filter(
-                    ticket_number=ticket_number).first()
+                booking = Booking.objects.filter(ticket_number=ticket_number).first()
                 response += f"CON Your ticket Details are \n \n"
                 response += f"ROUTE: {booking.schedule.route.name}\n"
                 response += f"DEPARTURE PLACE: Mbezi Stand \n"
@@ -233,10 +279,8 @@ def ussd_callback2(request):
         elif text.endswith("99"):
             response = "CON Your Booking is successfully completed: Please check your booking ticket via sms \n"
             response += "98. Go Back \n 99. Main Menu"
-
         else:
             response = "Enter correct response"
-
         return HttpResponse(response)
     return HttpResponse({"message": "Feature"})
 

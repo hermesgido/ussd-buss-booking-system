@@ -6,6 +6,8 @@ contextlib2==21.6.0
 Django==4.2.1
 djangorestframework==3.14.0
 idna==3.4
+phonenumbers==8.13.15
+python-dotenv==1.0.0
 pytz==2023.3
 requests==2.30.0
 schema==0.7.5
