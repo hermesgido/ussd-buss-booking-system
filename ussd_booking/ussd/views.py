@@ -174,7 +174,7 @@ def ussd_callback2(request):
             trip_date_new = datetime.today() + timedelta(days=1) if trip_date == 1 else datetime.today() + \
                 timedelta(days=2) if trip_date == 2 else None
             if trip_date_new is None:
-                print("Noneeeeeeeeeeeeeeeeeeeeee")
+                print("None trip")
             else:
                 print(f"not noneeeeeeeeeee {trip_date_new}")
 
@@ -197,7 +197,14 @@ def ussd_callback2(request):
                     phone_number=phone_number)
                 passenger.save()
                 message = f"Your Booking is successful, Ticket number is {ticket_number}"
-                send_sms_api(phone_number = [str(phone_number)], message = message)
+                message += f"ROUTE: {schedule.route.name}\n"
+                message += f"SEAT NO: {book.seat_number}\n"
+                message += f"DEPARTURE PLACE: Mbezi Stand \n"
+                message += f"DATE: {schedule.date}\n"
+                message += f"BUS NUMBER: {schedule.bus.number_plate}\n"
+                message += f"PRICE: {schedule.route.price}\n \n"
+                message += f"Ticket number is {ticket_number}\n"
+                send_sms_api(phone_number=[str(phone_number)], message=message)
                 response = f"CON Your booking details are \n \n"
                 response += f"ROUTE: {schedule.route.name}\n"
                 response += f"SEAT NO: {book.seat_number}\n"
@@ -371,6 +378,12 @@ def ussd_callback(request):
                 phone_number=phone_number)
             passenger.save()
             message = f"Your Booking is successful, Ticket number is {ticket_number}"
+            message += "CON Your booking details are \n \n"
+            message += f"ROUTE: {schedule.route.name}\n"
+            message += f"DEPARTURE PLACE: Mbezi Stand \n"
+            message += f"DATE: {schedule.date}\n"
+            message += f"BUS NUMBER: {schedule.bus.number_plate}\n"
+            message += f"PRICE: {schedule.route.price}\n \n"
             send_sms_api(phone_number=[str(phone_number)], message=message)
             print(f"Request routed id is {schedule_id}")
 
@@ -405,6 +418,7 @@ def ussd_callback(request):
                 response += f"DEPARTURE PLACE: Mbezi Stand \n"
                 response += f"DATE: {booking.schedule.date}\n"
                 response += f"BUS NUMBER: {booking.schedule.bus.number_plate}\n"
+
                 response += f"PRICE: {booking.schedule.route.price}\n \n"
                 response += "98. Go Back \n 99. Main Menu"
                 print(f"Enter booking it exists")
