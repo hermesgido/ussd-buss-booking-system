@@ -88,8 +88,7 @@
                                                         <td>{{r.departure_time}}</td>
                                                         <td>Active</td>
                                                         <td>
-                                                            <a href="">Edit</a>
-                                                            <a href="">Delete</a>
+                                                            <button class="btn-danger"><a class="text-white  text-decoration-none" href="{% url 'delete_schedule' r.id %}">DELETE</a></button>
                                                         </td>
                                                         </tr>
                                                     <tr>

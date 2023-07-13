@@ -94,10 +94,11 @@
                                                         {% endif %}
                                                     </td>
                                                         <td>{{user.date_joined}}</td>
+                                                      
                                                         <td>
-                                                            <a href="">Edit</a>
-                                                            <a href="">Delete</a>
+                                                            <button class="btn-danger"><a class="text-white text-decoration-none" href="{% url 'delete_user' user.id %}">DELETE</a></button>
                                                         </td>
+
                                                         </tr>
                                                     <tr>
                                                         {% endfor %}

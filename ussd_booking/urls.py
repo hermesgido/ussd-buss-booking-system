@@ -16,5 +16,8 @@ urlpatterns = [
     path('routes/', views.routes, name="routes"),
     path('schedule/', views.schedule, name="schedule"),
     path('complaints/', views.complaints, name="complaints"),
-     
+    
+    path("delete_schedule/<str:id>/", views.delete_schedule, name="delete_schedule"),
+    path("delete_user/<str:id>/", views.delete_user, name="delete_user"),
+
 ]

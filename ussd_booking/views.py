@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.shortcuts import redirect, render
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
@@ -11,9 +12,7 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         print(f"username is {username}")
-        
         user = authenticate(username=username, password=password)
-
         if user is not None:
             login(request, user)
             messages.success(request, "Welcom..!")
@@ -24,7 +23,13 @@ def login_view(request):
 
 @login_required
 def home(request):
-    return render(request, 'index.html')
+    bookings_total = Booking.objects.all().count()
+    busses_total = Bus.objects.all().count()
+    today_schedule = Schedule.objects.all().count()
+    total_customers = Passenger.objects.all().count()
+    
+    context = {"bookings_total":bookings_total, "busses_total":busses_total, "today_schedule":today_schedule, "total_customers":total_customers}
+    return render(request, 'index.html', context)
 
 def logout_view(request):
     logout(request)
@@ -122,7 +127,7 @@ def schedule(request):
            route = form.cleaned_data['route']
            date = form.cleaned_data['date']
            
-           if Schedule.objects.filter(bus=buss):
+           if Schedule.objects.filter(bus=buss, date=date):
                messages.error(request, "Schedule with this buss alredy exist")
                return redirect(schedule)
         #    if Schedule.objects.filter(route=route, date=date).exists():
@@ -142,4 +147,22 @@ def complaints(request):
     
     context =  {'complaints': complaints_list}
     return render(request, 'complaints.html', context)
+
+def delete_user(request, id):
+    user = User.objects.get(id=id)
+    user.delete()
+    messages.success(request, 'User deleted successfully')
+    return redirect(users)
+
+def delete_schedule(request, id):
+    sch = Schedule.objects.get(id=id)
+    sch.delete()
+    messages.success(request, 'Schedule deleted successfully')
+    return redirect(schedule)
+
+
+# def delete_user(request):
+#     return redirect(users)
+# def delete_user(request):
+#     return redirect(users)
 

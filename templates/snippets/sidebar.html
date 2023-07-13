@@ -37,10 +37,7 @@
                        
                     </li>   
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"  aria-expanded="false" data-target="#submenu-5" aria-controls="submenu-5"><i class="fas fa-fw fa-table"></i>Customes</a>
-                       
-                    </li>  
+                     
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'complaints' %}"  aria-expanded="false" data-target="#submenu-5" aria-controls="submenu-5"><i class="fas fa-fw fa-table"></i>Complaints</a>
                        
@@ -58,10 +55,10 @@
                 </li>
                 {% endif %}
 
-                    <li class="nav-item">
+                    {% comment %} <li class="nav-item">
                         <a class="nav-link" href="#"  aria-expanded="false" data-target="#submenu-5" aria-controls="submenu-5"><i class="fas fa-fw fa-table"></i>Account</a>
                        
-                    </li>     <li class="nav-item">
+                    </li>     <li class="nav-item"> {% endcomment %}
                         <a class="nav-link" href="{% url 'logout' %}"  aria-expanded="false" data-target="#submenu-5" aria-controls="submenu-5"><i class="fas fa-fw fa-table"></i>Logout</a>
                        
                     </li>

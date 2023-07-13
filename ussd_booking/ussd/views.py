@@ -21,7 +21,7 @@ class BusSeats:
         # Update specific index elements with "xx"
         for seat in sold_seats:
             if seat < len(available_seats):
-                available_seats[seat] = "xx"
+                available_seats[seat - 1] = "xx"
 
         # Format seats with four columns and add spacing between the second and third columns
         formatted_rows = []

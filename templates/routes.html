@@ -70,7 +70,6 @@
                                                         <th class="border-0">Departure point</th>
                                                         <th class="border-0">Arrival point</th>
                                                         <th class="border-0">Price</th>
-                                                        <th class="border-0">Action</th>
                                                         
                                                     </tr>
                                                 </thead>
@@ -85,10 +84,7 @@
                                                         <td>{{r.departure_point}}</td>
                                                         <td>{{r.arrival_point}}  </td>
                                                         <td>{{r.price | intcomma}} Tsh </td>
-                                                        <td>
-                                                            <a href="">Edit</a>
-                                                            <a href="">Delete</a>
-                                                        </td>
+                                                        
                                                         </tr>
                                                     <tr>
                                                         {% endfor %}
